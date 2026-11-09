@@ -33,6 +33,17 @@ app.get('/users', async(req, res)=>{
   res.send(user1)
 })
 
+app.post('/jobs', async (req, res) => {
+  try {
+    const job = req.body;
+    const result = await jobs.insertOne(job);
+
+    res.send(result);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({ message: "Data insertion failed" });
+  }
+});
 
 app.get('/', (req, res)=>{
     res.send(`JobSeekerBD Server is Running on ${port}`)
