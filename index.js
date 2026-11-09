@@ -44,6 +44,10 @@ app.post('/jobs', async (req, res) => {
     res.status(500).send({ message: "Data insertion failed" });
   }
 });
+app.get('/jobs', async(req, res)=>{
+  const job = await jobs.find({}).toArray();
+  res.send(job)
+})
 
 app.get('/', (req, res)=>{
     res.send(`JobSeekerBD Server is Running on ${port}`)
