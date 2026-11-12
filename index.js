@@ -44,15 +44,48 @@ app.post('/jobs', async (req, res) => {
     res.status(500).send({ message: "Data insertion failed" });
   }
 });
+
 app.get('/jobs', async(req, res)=>{
-  const job = await jobs.find({}).toArray();
-  res.send(job)
-})
+  const search = req.query.search;
+  const query = {};
+  // console.log(req.query);
+  if(req.query){
+    if(req.query.jobType){
+      query.jobType = req.query.jobType;
+    }
+    if(req.query.isRemote){
+      query.isRemote = req.query.isRemote === 'true'
+    }
+  }
+  if (search) {
+    query.$or = [
+      { title: { $regex: search, $options: 'i' } },
+      { responsibilities: { $regex: search, $options: 'i' } },
+      { qualifications: { $regex: search, $options: 'i' } },
+      { company: { $regex: search, $options: 'i' } },
+      { category: { $regex: search, $options: 'i' } }
+    ];
+  }
+
+  const result = await jobs.find(query).toArray();
+
+  res.send(result);
+});
 
 app.delete('/jobs/:id', async(req, res)=>{
   const id  = req.params.id;
   const query = {_id: new ObjectId(id)}
   const result = await jobs.deleteOne(query)
+  res.send(result)
+})
+
+app.patch('/jobs/:id', async(req, res)=>{
+  const id = req.params.id;
+  const query = {_id: new ObjectId(id)}
+  const updatedDoc = {
+    $set: req.body
+  }
+  const result = await jobs.updateOne(query, updatedDoc)
   res.send(result)
 })
 
