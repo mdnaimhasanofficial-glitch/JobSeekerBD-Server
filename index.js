@@ -84,6 +84,22 @@ app.post('/application', async (req, res) => {
   }
 });
 
+// All applications, optionally filtered by one seeker (?userId=<id>)
+// — used by the seeker "My Applications" page.
+app.get('/applications', async (req, res) => {
+  try {
+    const query = {};
+    if (req.query.userId) {
+      query.userId = req.query.userId;
+    }
+    const result = await applications.find(query).toArray();
+    res.send(result);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({ message: "Failed to load applications" });
+  }
+});
+
 app.get('/jobs/:id', async(req, res)=>{
   const id = req.params.id;
   const query = {_id: new ObjectId(id)}
